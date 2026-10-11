@@ -1,37 +1,78 @@
-﻿
-# ApiDemos Automation (Appium 2 + C# + NUnit + Allure)
+﻿# Mobile Automation: Appium + C# + NUnit
 
+UI test automation for Android. The tests run against **ApiDemos**, the official Appium demo app.
 
+## Test environment
 
-Mini project: Android UI automation of the Appium ApiDemos app.
+- **Platform:** Android
+- **Device:** Android emulator (Pixel 6, API 34, Google APIs), `emulator-5554`
+- **Automation driver:** Appium 3.x with UiAutomator2
+- **Tests:** C# (.NET 8), NUnit
+- **Reports:** Allure
 
+## What the tests do
 
+| Test | What it checks |
+|---|---|
+| `HomeScreen_IsLoaded` | The app starts and the home screen with the list of sections is displayed |
+| `CanNavigate_ToAlertDialogs` | From the home screen: App > Alert Dialogs > opens the OK/Cancel dialog, which is visible |
+| `OkCancelDialog_CanBeCancelled` | Opens the OK/Cancel dialog, presses Cancel, the dialog closes |
+| `OkCancelDialog_CanBeConfirmed` | Opens the OK/Cancel dialog, presses OK, the dialog closes |
+| `CancelDialog` (JSON scenario) | Same as the Cancel test, but steps are read from `scenarios.json` |
+| `ConfirmDialog` (JSON scenario) | Same as the OK test, steps read from `scenarios.json` |
 
-## Stack
+## Key points
 
-C#/.NET, NUnit, Appium 2.x (UiAutomator2), Allure Reports, Page Object Model.
+- **Page Object Model:** one class per screen, tests contain only checks.
+- **Explicit waits** only, no `Thread.Sleep`.
+- **JSON scenarios:** a scenario is a name, a list of steps and an expected result. One generic test runs all of them, so a new scenario is a new entry in the JSON file.
+- **Allure:** steps in the report, screenshot attached when a test fails.
+- **Settings in JSON** (`appsettings.json`): Appium URL, device name, app file.
 
+## Allure report
 
+![Allure overview](docs/Allure-overview.png)
 
-## Run
+![Test steps](docs/Allure-steps.png)
 
-1. Start an Android emulator (`adb devices` must show it).
+![Fail screenshot](docs/ScreenshotFail.png)
 
-2. `./scripts/start-appium.ps1` (keep it running).
+![Allure graphs](docs/AllureGraphs.png)
 
-3. `./scripts/run-tests.ps1` or `dotnet test --filter "Name~Cancelled"`.
+## Setup
 
-4. `allure serve <path to allure-results>`.
+1. Install Node.js, JDK 17+, Android Studio (Android SDK and an emulator).
+2. Install Appium and the driver:
 
+        npm install -g appium
+        appium driver install uiautomator2
 
+3. Install Allure CLI: `npm install -g allure-commandline`
+4. Download `ApiDemos-debug.apk` from https://github.com/appium/android-apidemos/releases and put it into the `apps/` folder (the APK is not stored in the repo).
+5. Check the environment: `appium driver doctor uiautomator2`
 
-## Structure
+## Run the tests
 
-- `Config/` settings loaded from JSON
+1. Start the emulator and check it: `adb devices` must show `emulator-5554   device`.
+2. Start the Appium server in a separate window and keep it open:
 
-- `Core/` driver factory and base test (screenshot on failure)
+        appium --address 127.0.0.1 --port 4723
 
-- `Pages/` page objects
+3. Run the tests:
 
-- `Tests/` test classes
+        dotnet test                                                  (all tests)
+        dotnet test --filter "Name=CancelDialog"                     (one test by exact name)
+        dotnet test --filter "FullyQualifiedName~AlertDialogTests"   (one class)
 
+4. Open the Allure report:
+
+        allure serve src/ApiDemosAutomation.Tests/bin/Debug/net8.0/allure-results
+
+## Project structure
+
+    src/ApiDemosAutomation.Tests/
+      Config/    settings loaded from JSON
+      Core/      driver creation and base test (setup, teardown, screenshot on failure)
+      Pages/     page objects
+      Tests/     test classes and the JSON scenario test
+      Scenarios/ scenarios.json
