@@ -1,0 +1,15 @@
+﻿
+bin/
+
+obj/
+
+.vs/
+
+*.user
+
+allure-results/
+
+allure-report/
+
+apps/*.apk
+
