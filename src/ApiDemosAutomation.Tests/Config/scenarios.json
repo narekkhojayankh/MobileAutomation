@@ -1,0 +1,14 @@
+﻿{
+	"scenarios": [
+		{
+			"name": "CancelDialog",
+			"steps": [ "OpenApp", "OpenAlertDialogs", "OpenOkCancelDialog", "PressCancel" ],
+			"expected": "DialogClosed"
+		},
+		{
+			"name": "ConfirmDialog",
+			"steps": [ "OpenApp", "OpenAlertDialogs", "OpenOkCancelDialog", "PressOk" ],
+			"expected": "DialogClosed"
+		}
+	]
+}

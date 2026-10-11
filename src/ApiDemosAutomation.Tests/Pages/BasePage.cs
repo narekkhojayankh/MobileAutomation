@@ -5,7 +5,7 @@ using OpenQA.Selenium.Support.UI;
 
 namespace ApiDemosAutomation.Tests.Pages;
 
-public abstract class BasePage
+public class BasePage
 {
     protected readonly AndroidDriver Driver;
     protected readonly WebDriverWait Wait;
